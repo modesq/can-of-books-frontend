@@ -1,6 +1,8 @@
 import React from "react";
 import axios from "axios";
-import Carousel from "react-bootstrap/Carousel";
+import BooksCarousel from "./components/BooksCarousel";
+import BookFormModal from "./components/BookFormModal";
+import Button from "react-bootstrap/Button";
 
 
 class BestBooks extends React.Component {
@@ -25,6 +27,54 @@ class BestBooks extends React.Component {
       });
   };
 
+  handleShow = () => {
+    this.setState({
+      show: true,
+    });
+  };
+
+  handleClose = () => {
+    this.setState({
+      show: false,
+    });
+  };
+
+  addBook = (event) => {
+    event.preventDefault();
+
+    const obj = {
+      title: event.target.title.value,
+      description: event.target.description.value,
+      status: event.target.status.value
+    };
+
+    console.log(obj);
+    axios
+      .post(`http://localhost:3000/addBooks`, obj)
+      .then((result) => {
+        return this.setState({
+          books: result.data,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+      
+    this.handleClose();
+  };
+
+  deleteBook = (id) => {
+    axios
+      .delete(`http://localhost:3000/deleteBooks/${id}`)
+      .then((result) => {
+        this.setState({
+          books: result.data,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   render() {
 
@@ -33,32 +83,29 @@ class BestBooks extends React.Component {
     return (
       <>
         <h2>My Essential Lifelong Learning &amp; Formation Shelf</h2>
-
-        {this.state.books.length ? (
-          // <p>Book Carousel coming soon</p>
-          <Carousel>
-            {this.state.books.map((item) => {
-              return (
-                <Carousel.Item>
-                  <img
-                    className="d-block w-100"
-                    src="https://images.unsplash.com/photo-1553095066-5014bc7b7f2d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8d2FsbCUyMGJhY2tncm91bmR8ZW58MHx8MHx8&w=1000&q=80"
-                    alt="First slide"
-                  />
-                  <Carousel.Caption>
-                    <h3>{item.title}</h3>
-                    <p>{item.description}</p>
-                    <p>{item.status}</p>
-                  </Carousel.Caption>
-                </Carousel.Item>
-              );
-            }
-            )
-            }
-          </Carousel>
-        ) : (
-          <h3>No Books Found :(</h3>
-        )}
+        <Button
+          variant="outline-secondary"
+          size="lg"
+          onClick={this.handleShow}
+        >
+          Add Book
+        </Button>
+        <BookFormModal
+          show={this.state.show}
+          handleClose={this.handleClose}
+          addBook={this.addBook}
+          handleOnChange={this.handleOnChange}
+        />
+        {
+          this.state.books.length ? (
+            <BooksCarousel
+              books={this.state.books}
+              deleteBook={this.deleteBook}
+            />
+          ) : (
+            <h3>No Books Found :(</h3>
+          )
+        }
       </>
     )
   }
