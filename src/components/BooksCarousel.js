@@ -24,6 +24,12 @@ class BooksCarousel extends React.Component {
                                 >
                                     Delete Book
                                 </Button>
+                                <Button
+                                    variant="light"
+                                    onClick={() => this.props.handleShowUpdateModal(item)}
+                                >
+                                    Update Book
+                                </Button>
                             </Carousel.Caption>
                         </Carousel.Item>
                     );

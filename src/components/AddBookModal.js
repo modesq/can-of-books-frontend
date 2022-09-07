@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 
-class BookFormModal extends React.Component {
+class AddBookModal extends React.Component {
     render() {
         return (
             <Modal show={this.props.show} onHide={this.props.handleClose}>
@@ -53,4 +53,4 @@ class BookFormModal extends React.Component {
     }
 }
 
-export default BookFormModal;
+export default AddBookModal;
