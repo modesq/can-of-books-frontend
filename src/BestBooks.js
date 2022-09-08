@@ -4,6 +4,7 @@ import BooksCarousel from "./components/BooksCarousel";
 import AddBookModal from "./components/AddBookModal";
 import UpdateBookModal from "./components/UpdateBookModal";
 import Button from "react-bootstrap/Button";
+import { withAuth0 } from '@auth0/auth0-react';
 
 
 class BestBooks extends React.Component {
