@@ -6,7 +6,6 @@ import UpdateBookModal from "./components/UpdateBookModal";
 import Button from "react-bootstrap/Button";
 import { withAuth0 } from '@auth0/auth0-react';
 
-
 class BestBooks extends React.Component {
   constructor(props) {
     super(props);
@@ -19,8 +18,9 @@ class BestBooks extends React.Component {
   }
 
   componentDidMount = () => {
+    const { user } = this.props.auth0;
     axios
-      .get("http://localhost:3000/getBooks")
+      .get(`http://localhost:3005/getBooks?userName=${user.email}`)
       .then((result) => {
         this.setState({
           books: result.data,
@@ -46,16 +46,18 @@ class BestBooks extends React.Component {
 
   addBook = (event) => {
     event.preventDefault();
+    const { user } = this.props.auth0;
 
     const obj = {
       title: event.target.title.value,
       description: event.target.description.value,
-      status: event.target.status.value
+      status: event.target.status.value,
+      name: user.email
     };
 
     console.log(obj);
     axios
-      .post(`http://localhost:3000/addBooks`, obj)
+      .post(`http://localhost:3005/addBooks`, obj)
       .then((result) => {
         return this.setState({
           books: result.data,
@@ -69,8 +71,9 @@ class BestBooks extends React.Component {
   };
 
   deleteBook = (id) => {
+    const { user } = this.props.auth0;
     axios
-      .delete(`http://localhost:3000/deleteBooks/${id}`)
+      .delete(`http://localhost:3005/deleteBooks/${id}?userName=${user.email}`)
       .then((result) => {
         this.setState({
           books: result.data,
@@ -82,16 +85,18 @@ class BestBooks extends React.Component {
   };
 
   updateBook = (event) => {
-    event.preventDefault();
+    event.preventDefafult();
+    const { user } = this.props.auth0;
     let obj = {
       title: event.target.title.value,
       description: event.target.description.value,
-      status: event.target.status.value
+      status: event.target.status.value,
+      name: user.email
     }
     console.log(obj)
     const id = this.state.currentBooks._id;
     axios
-      .put(`http://localhost:3000/updateBooks/${id}`, obj)
+      .put(`http://localhost:3005/updateBooks/${id}`, obj)
       .then(result => {
         this.setState({
           books: result.data
@@ -154,4 +159,4 @@ class BestBooks extends React.Component {
   }
 }
 
-export default BestBooks;
+export default withAuth0(BestBooks);
