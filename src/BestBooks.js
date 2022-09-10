@@ -6,21 +6,21 @@ import UpdateBookModal from "./components/UpdateBookModal";
 import Button from "react-bootstrap/Button";
 import { withAuth0 } from '@auth0/auth0-react';
 
-
 class BestBooks extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      show: false,
-      showFlag: false,
+      // show: false,
+      // showFlag: false,
       books: [],
       currentBooks: {},
     }
   }
 
   componentDidMount = () => {
+    const { user } = this.props.auth0;
     axios
-      .get("http://localhost:3000/getBooks")
+      .get(`https://can-of-books-backend-ms.herokuapp.com/Books?userName=${user.email}`)
       .then((result) => {
         this.setState({
           books: result.data,
@@ -46,16 +46,17 @@ class BestBooks extends React.Component {
 
   addBook = (event) => {
     event.preventDefault();
-
+    const { user } = this.props.auth0;
     const obj = {
       title: event.target.title.value,
       description: event.target.description.value,
-      status: event.target.status.value
+      status: event.target.status.value,
+      name: user.email
     };
 
     console.log(obj);
     axios
-      .post(`http://localhost:3000/addBooks`, obj)
+      .post(`https://can-of-books-backend-ms.herokuapp.com/Books`, obj)
       .then((result) => {
         return this.setState({
           books: result.data,
@@ -69,8 +70,9 @@ class BestBooks extends React.Component {
   };
 
   deleteBook = (id) => {
+    const { user } = this.props.auth0;
     axios
-      .delete(`http://localhost:3000/deleteBooks/${id}`)
+      .delete(`https://can-of-books-backend-ms.herokuapp.com/${id}?userName=${user.email}`)
       .then((result) => {
         this.setState({
           books: result.data,
@@ -82,16 +84,18 @@ class BestBooks extends React.Component {
   };
 
   updateBook = (event) => {
-    event.preventDefault();
+    event.preventDefafult();
+    const { user } = this.props.auth0;
     let obj = {
       title: event.target.title.value,
       description: event.target.description.value,
-      status: event.target.status.value
+      status: event.target.status.value,
+      name: user.email
     }
     console.log(obj)
     const id = this.state.currentBooks._id;
     axios
-      .put(`http://localhost:3000/updateBooks/${id}`, obj)
+      .put(`https://can-of-books-backend-ms.herokuapp.com/${id}`, obj)
       .then(result => {
         this.setState({
           books: result.data
@@ -128,7 +132,6 @@ class BestBooks extends React.Component {
           show={this.state.show}
           handleClose={this.handleClose}
           addBook={this.addBook}
-          handleOnChange={this.handleOnChange}
         />
         <UpdateBookModal
           show={this.state.showFlag}
@@ -136,22 +139,21 @@ class BestBooks extends React.Component {
           updateBook={this.updateBook}
           currentBooks={this.state.currentBooks}
         />
-        {
-          this.state.books.length ? (
-            <>
-              <BooksCarousel
-                books={this.state.books}
-                deleteBook={this.deleteBook}
-                handleShowUpdateModal={this.handleShowUpdateModal}
-              />
-            </>
-          ) : (
-            <h3>No Books Found :(</h3>
-          )
+        {this.state.books.length ? (
+          <>
+            <BooksCarousel
+              books={this.state.books}
+              deleteBook={this.deleteBook}
+              handleShowUpdateModal={this.handleShowUpdateModal}
+            />
+          </>
+        ) : (
+          <h3>No Books Found :(</h3>
+        )
         }
       </>
     )
   }
 }
 
-export default BestBooks;
+export default withAuth0(BestBooks);
