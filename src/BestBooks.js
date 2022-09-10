@@ -10,8 +10,8 @@ class BestBooks extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      show: false,
-      showFlag: false,
+      // show: false,
+      // showFlag: false,
       books: [],
       currentBooks: {},
     }
@@ -20,7 +20,7 @@ class BestBooks extends React.Component {
   componentDidMount = () => {
     const { user } = this.props.auth0;
     axios
-      .get(`http://localhost:3005/getBooks?userName=${user.email}`)
+      .get(`https://can-of-books-backend-ms.herokuapp.com/Books?userName=${user.email}`)
       .then((result) => {
         this.setState({
           books: result.data,
@@ -47,7 +47,6 @@ class BestBooks extends React.Component {
   addBook = (event) => {
     event.preventDefault();
     const { user } = this.props.auth0;
-
     const obj = {
       title: event.target.title.value,
       description: event.target.description.value,
@@ -57,7 +56,7 @@ class BestBooks extends React.Component {
 
     console.log(obj);
     axios
-      .post(`http://localhost:3005/addBooks`, obj)
+      .post(`https://can-of-books-backend-ms.herokuapp.com/Books`, obj)
       .then((result) => {
         return this.setState({
           books: result.data,
@@ -73,7 +72,7 @@ class BestBooks extends React.Component {
   deleteBook = (id) => {
     const { user } = this.props.auth0;
     axios
-      .delete(`http://localhost:3005/deleteBooks/${id}?userName=${user.email}`)
+      .delete(`https://can-of-books-backend-ms.herokuapp.com/${id}?userName=${user.email}`)
       .then((result) => {
         this.setState({
           books: result.data,
@@ -96,7 +95,7 @@ class BestBooks extends React.Component {
     console.log(obj)
     const id = this.state.currentBooks._id;
     axios
-      .put(`http://localhost:3005/updateBooks/${id}`, obj)
+      .put(`https://can-of-books-backend-ms.herokuapp.com/${id}`, obj)
       .then(result => {
         this.setState({
           books: result.data
@@ -133,7 +132,6 @@ class BestBooks extends React.Component {
           show={this.state.show}
           handleClose={this.handleClose}
           addBook={this.addBook}
-          handleOnChange={this.handleOnChange}
         />
         <UpdateBookModal
           show={this.state.showFlag}
@@ -141,18 +139,17 @@ class BestBooks extends React.Component {
           updateBook={this.updateBook}
           currentBooks={this.state.currentBooks}
         />
-        {
-          this.state.books.length ? (
-            <>
-              <BooksCarousel
-                books={this.state.books}
-                deleteBook={this.deleteBook}
-                handleShowUpdateModal={this.handleShowUpdateModal}
-              />
-            </>
-          ) : (
-            <h3>No Books Found :(</h3>
-          )
+        {this.state.books.length ? (
+          <>
+            <BooksCarousel
+              books={this.state.books}
+              deleteBook={this.deleteBook}
+              handleShowUpdateModal={this.handleShowUpdateModal}
+            />
+          </>
+        ) : (
+          <h3>No Books Found :(</h3>
+        )
         }
       </>
     )
